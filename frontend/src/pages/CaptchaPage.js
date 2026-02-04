@@ -27,9 +27,26 @@ function CaptchaPage() {
             <br /><br />
             <button onClick={submit}>Verify</button>
 
-            {result && (
-                <pre>{JSON.stringify(result.behavior, null, 2)}</pre>
-            )}
+           {result && (
+    <div style={{ marginTop: 20 }}>
+        <h4>Behavior Metrics</h4>
+        <pre>{JSON.stringify(result.behavior, null, 2)}</pre>
+
+        <h4>Behavior Hash (SHA-256)</h4>
+        <p style={{
+            wordBreak: "break-all",
+            fontSize: "12px",
+            background: "#f5f5f5",
+            padding: "10px",
+            borderRadius: "5px"
+        }}>
+            {result.behaviorHash}
+        </p>
+        <h4>Difficulty: {captcha.difficulty}</h4>
+
+    </div>
+)}
+
         </div>
     );
 }
