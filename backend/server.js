@@ -4,9 +4,21 @@ const cors = require("cors");
 const captchaRoutes = require("./routes/captchaRoutes");
 
 const app = express();
-app.use(cors());
-app.use(express.json());
 
+// Middleware
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true
+}));
+app.use(express.json());
 app.use("/captcha", captchaRoutes);
 
-app.listen(5000);
+// Health check
+app.get("/health", (req, res) => {
+    res.json({ status: "Server running", timestamp: new Date().toISOString() });
+});
+
+const PORT = 5000;
+app.listen(PORT, () => {
+    console.log(`CAPTCHA Server running on http://localhost:${PORT}`);
+});

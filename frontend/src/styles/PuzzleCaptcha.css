@@ -1,0 +1,279 @@
+.puzzle-captcha {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 20px;
+}
+
+.puzzle-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    padding: 32px;
+    max-width: 600px;
+    width: 100%;
+}
+
+.difficulty-badge {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #666;
+}
+
+.badge-easy { color: #10b981; font-weight: 600; }
+.badge-medium { color: #f59e0b; font-weight: 600; }
+.badge-hard { color: #ef4444; font-weight: 600; }
+
+.instruction-container {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.instruction {
+    font-size: 22px;
+    color: #1f2937;
+    margin-bottom: 8px;
+}
+
+.instruction-hint {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.puzzle-info {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.moves-counter {
+    font-size: 16px;
+    color: #4f46e5;
+    font-weight: 600;
+}
+
+.puzzle-grid {
+    display: grid;
+    gap: 4px;
+    margin: 0 auto 24px;
+    background: #e5e7eb;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.puzzle-piece {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.3s ease;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+}
+
+.puzzle-piece:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.puzzle-piece.selected {
+    border: 3px solid #fbbf24;
+    box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.2);
+}
+
+.puzzle-piece.correct {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.puzzle-piece.incorrect {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.piece-number {
+    position: relative;
+    z-index: 1;
+}
+
+.piece-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.puzzle-controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.reset-btn, .submit-btn {
+    flex: 1;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.reset-btn {
+    background: #6b7280;
+    color: white;
+}
+
+.reset-btn:hover:not(:disabled) {
+    background: #4b5563;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.submit-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.reset-btn:disabled, .submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.result-container {
+    margin-top: 24px;
+    padding: 24px;
+    border-radius: 12px;
+    animation: slideIn 0.3s ease;
+}
+
+.result-container.success {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    border: 2px solid #10b981;
+}
+
+.result-container.error {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border: 2px solid #ef4444;
+}
+
+.result-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.result-icon {
+    font-size: 32px;
+}
+
+.metrics-section {
+    margin: 20px 0;
+}
+
+.metrics-section h3 {
+    font-size: 16px;
+    color: #374151;
+    margin-bottom: 12px;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+}
+
+.metric {
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.metric .label {
+    display: block;
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.metric .value {
+    display: block;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.hash-section {
+    margin: 20px 0;
+}
+
+.hash-section h3 {
+    font-size: 14px;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.hash-display {
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.hash-display code {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: #4f46e5;
+    word-break: break-all;
+}
+
+.new-captcha-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.new-captcha-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.puzzle-captcha-loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+    color: #6b7280;
+}
