@@ -4,6 +4,7 @@ const blockchain = require("../services/blockchainService");
 const BotDetector = require("../utils/botDetection");
 const { generatePuzzleCaptcha, verifyPuzzleSolution } = require("../utils/puzzleGenerator");
 const { generateAudioCaptcha, verifyAudioCaptcha } = require("../utils/audioGenerator");
+const { generateImageCaptcha, verifyImageSelection, calculateWrongSelections } = require("../utils/imageGenerator");
 const gamificationSystem = require("../utils/gamification");
 
 let store = {};
@@ -77,7 +78,14 @@ exports.verifyCaptcha = async (req, res) => {
     }
 
     const solveTime = (Date.now() - record.startTime) / 1000;
-    const correct = Number(userAnswer) === record.answer;
+    
+    // Improved comparison for both integers and decimals
+    const userNum = parseFloat(userAnswer);
+    const correctNum = parseFloat(record.answer);
+    
+    // Check if numbers are valid and compare with small tolerance for floating point errors
+    const correct = !isNaN(userNum) && !isNaN(correctNum) && 
+                   Math.abs(userNum - correctNum) < 0.01;
 
     // Bot detection analysis
     const botAnalysis = BotDetector.calculateOverallBotScore(record.behaviorData);
@@ -333,6 +341,96 @@ exports.getLeaderboard = async (req, res) => {
     res.json({
         leaderboard,
         userStats
+    });
+};
+
+// Image CAPTCHA endpoints
+exports.newImageCaptcha = async (req, res) => {
+    const reputation = await blockchain.getReputation(blockchain.wallet.address);
+
+    let difficulty = "easy";
+    if (reputation < 3) difficulty = "hard";
+    else if (reputation < 7) difficulty = "medium";
+
+    const captcha = generateImageCaptcha(difficulty);
+    const id = Date.now().toString();
+
+    store[id] = {
+        type: "image",
+        correctIndexes: captcha.correctIndexes,
+        startTime: Date.now(),
+        retries: 0,
+        behaviorData: {
+            mouseMovements: [],
+            keystrokes: [],
+            focusData: { focusChanges: 0, totalTime: 0 }
+        }
+    };
+
+    analyticsData.totalCaptchas++;
+    analyticsData.captchaTypes.image = (analyticsData.captchaTypes.image || 0) + 1;
+
+    res.json({
+        captchaId: id,
+        question: captcha.question,
+        images: captcha.images,
+        correctIndexes: captcha.correctIndexes, // Will be used for UI feedback after verification
+        correctCount: captcha.correctCount,
+        gridSize: captcha.gridSize,
+        difficulty
+    });
+};
+
+exports.verifyImageCaptcha = async (req, res) => {
+    const { captchaId, selectedIndexes, behaviorData } = req.body;
+    const record = store[captchaId];
+
+    if (!record) return res.json({ success: false });
+
+    record.retries += 1;
+
+    if (behaviorData) {
+        record.behaviorData = behaviorData;
+    }
+
+    const solveTime = (Date.now() - record.startTime) / 1000;
+    const correct = verifyImageSelection(selectedIndexes, record.correctIndexes);
+    const wrongSelections = calculateWrongSelections(selectedIndexes, record.correctIndexes);
+
+    const botAnalysis = BotDetector.calculateOverallBotScore(record.behaviorData);
+
+    const behavior = {
+        solveTime: solveTime.toFixed(2),
+        accuracy: correct ? 100 : Math.max(0, 100 - (wrongSelections * 20)),
+        retries: record.retries,
+        wrongSelections,
+        botScore: botAnalysis.totalScore
+    };
+
+    const behaviorHash = hashBehavior(behavior);
+    const suspicious = behavior.solveTime < 4 || !botAnalysis.isHuman;
+
+    if (suspicious) analyticsData.suspiciousCount++;
+    if (correct) analyticsData.successfulSolves++;
+
+    await blockchain.updateReputation(behaviorHash, suspicious);
+    const reputation = await blockchain.getReputation(blockchain.wallet.address);
+
+    const userId = blockchain.wallet.address;
+    const stats = gamificationSystem.updateStats(userId, {
+        success: correct,
+        behavior,
+        type: "image",
+        reputation: Number(reputation)
+    });
+
+    res.json({
+        success: correct,
+        behavior,
+        behaviorHash,
+        botAnalysis,
+        stats,
+        reputation: Number(reputation)
     });
 };
 

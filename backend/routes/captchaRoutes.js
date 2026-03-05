@@ -15,6 +15,10 @@ router.post("/puzzle/verify", controller.verifyPuzzleCaptcha);
 router.get("/audio/new", controller.newAudioCaptcha);
 router.post("/audio/verify", controller.verifyAudioCaptcha);
 
+// Image CAPTCHA routes
+router.get("/image/new", controller.newImageCaptcha);
+router.post("/image/verify", controller.verifyImageCaptcha);
+
 // Analytics and Gamification routes
 router.get("/analytics", controller.getAnalytics);
 router.get("/leaderboard", controller.getLeaderboard);
